@@ -1,0 +1,8 @@
+
+W
+java:S1481
+"5Remove this unused "resourceAsStream" local variable.(¨‚Φ®ωÿÿÿÿ8έμ¨ΰ.
+f
+java:S1854
+"DRemove this useless assignment to local variable "resourceAsStream".(¨‚Φ®ωÿÿÿÿ8έμ¨ΰ.
+Z	java:S106"9Replace this use of System.out or System.err by a logger.(ήÒ—όÿÿÿÿ8έμ¨ΰ.

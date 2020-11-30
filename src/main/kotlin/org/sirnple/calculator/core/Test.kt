@@ -13,14 +13,24 @@ import java.nio.file.Path
  *  Description:
  */
 fun main() {
-    val path = "/example/multiply"
-    val lexer = CalculatorLexer(path.getResourceAsCharStream())
+    while (true) {
+        val readLine = readLine()
+        readLine?.let {
+            val evalResult = evaluate(it)
+            println(evalResult)
+        }
+    }
+}
+
+fun evaluate(line: String): Double {
+    val lexer = CalculatorLexer(CharStreams.fromString(line))
     val tokenStream = CommonTokenStream(lexer)
     val parser = CalculatorParser(tokenStream)
-    println(Calculator().visitExpression(parser.expression()))
+    return parser.equation().accept(Calculator())
 }
 
 fun String.getResourceAsCharStream(): CharStream {
     val `is` = String.javaClass.getResourceAsStream(this)
     return CharStreams.fromStream(`is`)
 }
+
