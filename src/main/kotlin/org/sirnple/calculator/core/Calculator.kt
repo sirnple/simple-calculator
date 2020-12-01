@@ -1,12 +1,10 @@
 package org.sirnple.calculator.core
 
 import org.antlr.v4.runtime.tree.TerminalNode
-import org.apache.commons.math3.complex.Complex
 import org.sirnple.calculator.antlr.CalculatorBaseVisitor
-import org.sirnple.calculator.antlr.CalculatorLexer
 import org.sirnple.calculator.antlr.CalculatorParser
-import org.sirnple.calculator.util.ASTUtils
 import java.lang.UnsupportedOperationException
+import java.math.BigDecimal
 import kotlin.math.pow
 
 /**
@@ -14,19 +12,26 @@ import kotlin.math.pow
  *  Created in: 2020-11-26
  *  Description:
  */
-class Calculator : CalculatorBaseVisitor<Double>() {
+object Calculator : CalculatorBaseVisitor<Double>() {
     private val variableTable = hashMapOf<String, Double>()
-    override fun visitEquation(ctx: CalculatorParser.EquationContext?): Double {
-        if (ctx?.relop() != null && ctx.relop().EQ() != null && ASTUtils.isExprVariable(ctx.expression(0))) {
-            variableTable[ctx.text] = visitExpression(ctx.expression(1))
-            println("New var ${ctx.text} has been init")
+    override fun visitStart(ctx: CalculatorParser.StartContext?): Double {
+        if (ctx == null) {
+            return Double.NaN
         }
-        return Double.NaN
+        return if (ctx.EQ() != null) {
+            variableTable[ctx.VARIABLE().text] = visitExpression(ctx.expression())
+            Double.NaN
+        } else {
+            visitExpression(ctx.expression())
+        }
     }
 
     override fun visitExpression(ctx: CalculatorParser.ExpressionContext?): Double {
+        if (ctx == null) {
+            return Double.NaN
+        }
         var result = 0.0
-        ctx?.children?.forEachIndexed { index, parseTree ->
+        ctx.children.forEachIndexed { index, parseTree ->
             if (index % 2 == 0) {
                 val multiplyingExpressionContext = parseTree as CalculatorParser.MultiplyingExpressionContext
                 if (index == 0) {
@@ -45,8 +50,11 @@ class Calculator : CalculatorBaseVisitor<Double>() {
     }
 
     override fun visitMultiplyingExpression(ctx: CalculatorParser.MultiplyingExpressionContext?): Double {
+        if (ctx == null) {
+            return Double.NaN
+        }
         var result = 0.0
-        ctx?.children?.forEachIndexed { index, parseTree ->
+        ctx.children.forEachIndexed { index, parseTree ->
             if (index % 2 == 0) {
                 val powExpressionContext = parseTree as CalculatorParser.PowExpressionContext
                 if (index == 0) {
@@ -66,53 +74,78 @@ class Calculator : CalculatorBaseVisitor<Double>() {
     }
 
     override fun visitPowExpression(ctx: CalculatorParser.PowExpressionContext?): Double {
-        val signedAtoms = ctx?.signedAtom()
-        val baseNumb = visitSignedAtom(signedAtoms?.get(0))
-        val exponentNumb = signedAtoms?.size?:0.0
-        return baseNumb.pow(exponentNumb.toDouble())
+        if (ctx == null) {
+            return Double.NaN
+        }
+        val signedAtoms = ctx.signedAtom()
+        return if (signedAtoms.size > 1) {
+            var exponent = 0.0
+            for (i in signedAtoms.lastIndex downTo 1) {
+                exponent = if (i == signedAtoms.lastIndex) {
+                    visitSignedAtom(signedAtoms[i])
+                } else {
+                    visitSignedAtom(signedAtoms[i]).pow(exponent)
+                }
+            }
+            visitSignedAtom(signedAtoms[0]).pow(exponent)
+        } else {
+            visitSignedAtom(signedAtoms[0])
+        }
     }
 
     override fun visitSignedAtom(ctx: CalculatorParser.SignedAtomContext?): Double {
-        return if (ctx?.signedAtom() != null) {
+        if (ctx == null) {
+            return Double.NaN
+        }
+        return if (ctx.signedAtom() != null) {
             if (ctx.PLUS() != null) {
                 -visitSignedAtom(ctx.signedAtom())
             } else {
                 visitSignedAtom(ctx.signedAtom())
             }
-        } else if (ctx?.func() != null) {
+        } else if (ctx.func() != null) {
             visitFunc(ctx.func())
         } else {
-            visitAtom(ctx?.atom())
+            visitAtom(ctx.atom())
         }
     }
 
     override fun visitAtom(ctx: CalculatorParser.AtomContext?): Double {
+        if (ctx == null) {
+            return Double.NaN
+        }
         return when {
-            ctx?.scientific() != null -> {
+            ctx.scientific() != null -> {
                 visitScientific(ctx.scientific())
             }
-            ctx?.variable() != null -> {
+            ctx.variable() != null -> {
                 visitVariable(ctx.variable())
             }
-            ctx?.constant() != null -> {
+            ctx.constant() != null -> {
                 visitConstant(ctx.constant())
             }
             else -> {
-                visitExpression(ctx?.expression())
+                visitExpression(ctx.expression())
             }
         }
     }
 
     override fun visitScientific(ctx: CalculatorParser.ScientificContext?): Double {
-        return ctx?.SCIENTIFIC_NUMBER()?.text?.toDouble()?:0.0
+        if (ctx == null) {
+            return Double.NaN
+        }
+        return BigDecimal(ctx.SCIENTIFIC_NUMBER().text).toDouble()
     }
 
     override fun visitConstant(ctx: CalculatorParser.ConstantContext?): Double {
+        if (ctx == null) {
+            return Double.NaN
+        }
         return when {
-            ctx?.PI() != null -> {
+            ctx.PI() != null -> {
                 Math.PI
             }
-            ctx?.EULER() != null -> {
+            ctx.EULER() != null -> {
                 Math.E
             }
             else -> {
@@ -122,11 +155,18 @@ class Calculator : CalculatorBaseVisitor<Double>() {
     }
 
     override fun visitVariable(ctx: CalculatorParser.VariableContext?): Double {
-        return if (variableTable[ctx?.text] != null) {
-            variableTable[ctx?.text]!!
+        if (ctx == null) {
+            return Double.NaN
+        }
+        return if (variableTable[ctx.text] != null) {
+            variableTable[ctx.text]!!
         } else {
-            println("No such variable [${ctx?.text}]")
+            println("No such variable [${ctx.text}]")
             Double.NaN
         }
+    }
+
+    fun clear() {
+        variableTable.clear()
     }
 }

@@ -32,8 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 grammar Calculator;
 
-equation
-   : expression relop expression
+start
+   : expression
+   | VARIABLE EQ expression
    ;
 
 expression

@@ -11,11 +11,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface CalculatorVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link CalculatorParser#equation}.
+	 * Visit a parse tree produced by {@link CalculatorParser#start}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitEquation(CalculatorParser.EquationContext ctx);
+	T visitStart(CalculatorParser.StartContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CalculatorParser#expression}.
 	 * @param ctx the parse tree

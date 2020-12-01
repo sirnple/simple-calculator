@@ -16,8 +16,14 @@ fun main() {
     while (true) {
         val readLine = readLine()
         readLine?.let {
-            val evalResult = evaluate(it)
-            println(evalResult)
+            if (it.compareTo("clear", true) == 0) {
+                Calculator.clear()
+            } else {
+                val evalResult = evaluate(it)
+                if (!evalResult.isNaN()) {
+                    println(evalResult)
+                }
+            }
         }
     }
 }
@@ -26,11 +32,6 @@ fun evaluate(line: String): Double {
     val lexer = CalculatorLexer(CharStreams.fromString(line))
     val tokenStream = CommonTokenStream(lexer)
     val parser = CalculatorParser(tokenStream)
-    return parser.equation().accept(Calculator())
-}
-
-fun String.getResourceAsCharStream(): CharStream {
-    val `is` = String.javaClass.getResourceAsStream(this)
-    return CharStreams.fromStream(`is`)
+    return Calculator.visit(parser.start())
 }
 

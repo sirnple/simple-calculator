@@ -8,15 +8,15 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface CalculatorListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link CalculatorParser#equation}.
+	 * Enter a parse tree produced by {@link CalculatorParser#start}.
 	 * @param ctx the parse tree
 	 */
-	void enterEquation(CalculatorParser.EquationContext ctx);
+	void enterStart(CalculatorParser.StartContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CalculatorParser#equation}.
+	 * Exit a parse tree produced by {@link CalculatorParser#start}.
 	 * @param ctx the parse tree
 	 */
-	void exitEquation(CalculatorParser.EquationContext ctx);
+	void exitStart(CalculatorParser.StartContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CalculatorParser#expression}.
 	 * @param ctx the parse tree

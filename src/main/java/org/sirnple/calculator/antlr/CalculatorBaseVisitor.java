@@ -17,7 +17,7 @@ public class CalculatorBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitEquation(CalculatorParser.EquationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStart(CalculatorParser.StartContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

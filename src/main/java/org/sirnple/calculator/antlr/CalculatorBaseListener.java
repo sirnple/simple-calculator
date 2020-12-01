@@ -16,13 +16,13 @@ public class CalculatorBaseListener implements CalculatorListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEquation(CalculatorParser.EquationContext ctx) { }
+	@Override public void enterStart(CalculatorParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEquation(CalculatorParser.EquationContext ctx) { }
+	@Override public void exitStart(CalculatorParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
